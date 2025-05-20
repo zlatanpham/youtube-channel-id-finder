@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { ChannelDataDialog } from '@/components/channel-data-dialog';
 import * as z from 'zod';
 import { isValidYouTubeChannelUrl } from '@/lib/youtube';
+import CopyButton from '@/components/copy-button';
 
 const formSchema = z.object({
   youtubeChannelUrl: z.string().url().refine(isValidYouTubeChannelUrl, {
@@ -27,6 +28,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const host = window.location.host;
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
   useEffect(() => {
     if (data) {
@@ -40,6 +43,9 @@ export default function LoginPage() {
       youtubeChannelUrl: '',
     },
   });
+
+  const youtubeChannelUrl = form.watch('youtubeChannelUrl');
+  const textUrl = `${protocol}://${host}/id/${youtubeChannelUrl}`;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -59,7 +65,7 @@ export default function LoginPage() {
   return (
     <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -108,10 +114,21 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
-          <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-            Made with ❤️ by{' '}
-            <a href="https://github.com/zlatanpham">Zlatan Pham</a>
-          </div>
+          {youtubeChannelUrl ? (
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-sm text-muted-foreground">
+                or get from the text URL:
+              </div>
+              <div className="flex items-center gap-2 w-full">
+                <Input readOnly value={textUrl} className="flex-1" />
+                <CopyButton text={textUrl} />
+              </div>
+            </div>
+          ) : null}
+        </div>
+        <div className="mt-6 text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+          Made with ❤️ by{' '}
+          <a href="https://github.com/zlatanpham">Zlatan Pham</a>
         </div>
         <ChannelDataDialog data={data} open={open} onOpenChange={setOpen} />
       </div>
