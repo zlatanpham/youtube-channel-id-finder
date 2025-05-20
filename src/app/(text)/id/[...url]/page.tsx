@@ -44,7 +44,10 @@ export default async function RssPage({ params }: Props) {
   try {
     const rssUrl = await getData(youtubeChannelUrl);
     return <div>{rssUrl}</div>;
-  } catch (error: any) {
-    return <div>{error.message}</div>;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return <div>{error.message}</div>;
+    }
+    return <div>An unexpected error occurred.</div>;
   }
 }
