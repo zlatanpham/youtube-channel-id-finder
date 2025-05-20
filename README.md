@@ -21,6 +21,13 @@ http://localhost:3000/id/${channel_url}
 http://localhost:3000/rss/${channel_url}
 ```
 
+Or you can try at the Vercel deployment:
+
+```
+https://youtube-channel-id-finder.vercel.app/id/@bbc
+https://youtube-channel-id-finder.vercel.app/rss/@bbc
+```
+
 ## License
 
 This project is licensed under the MIT License.
