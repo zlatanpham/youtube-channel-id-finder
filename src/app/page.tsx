@@ -10,9 +10,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { TvMinimalPlayIcon, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { ChannelDataDialog } from '@/components/channel-data-dialog';
 import * as z from 'zod';
 
 const formSchema = z.object({
@@ -32,6 +33,15 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setOpen(true);
+    }
+  }, [data]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,8 +55,8 @@ export default function LoginPage() {
       const response = await fetch(
         `/api/channel_id/${encodeURIComponent(values.youtubeChannelUrl)}`,
       );
-      const data = await response.json();
-      console.log(data);
+      const result = await response.json();
+      setData(result);
     } catch (error) {
       console.error('Error fetching channel data:', error);
     } finally {
@@ -111,6 +121,7 @@ export default function LoginPage() {
             <a href="https://github.com/zlatanpham">Zlatan Pham</a>
           </div>
         </div>
+        <ChannelDataDialog data={data} open={open} onOpenChange={setOpen} />
       </div>
     </div>
   );
