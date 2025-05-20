@@ -13,7 +13,7 @@ export async function GET(
 
   if (!isValidYouTubeChannelUrl(url)) {
     return NextResponse.json(
-      { error: 'Invalid YouTube channel URL' },
+      { error: `Invalid YouTube channel URL: ${url}` },
       { status: 400 },
     );
   }
