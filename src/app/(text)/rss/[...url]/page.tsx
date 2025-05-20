@@ -23,6 +23,7 @@ type Props = {
   params: {
     url: string[];
   };
+  searchParams?: Record<string, string | string[] | undefined>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
