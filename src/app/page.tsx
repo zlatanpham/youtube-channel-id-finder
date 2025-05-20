@@ -15,20 +15,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ChannelDataDialog } from '@/components/channel-data-dialog';
 import * as z from 'zod';
+import { isValidYouTubeChannelUrl } from '@/lib/youtube';
 
 const formSchema = z.object({
-  youtubeChannelUrl: z
-    .string()
-    .url()
-    .refine(
-      (url) =>
-        url.startsWith('https://www.youtube.com/@') ||
-        url.startsWith('https:/www.youtube.com/@') ||
-        url.startsWith('https://youtube.com/@'),
-      {
-        message: 'Must be a valid YouTube channel URL',
-      },
-    ),
+  youtubeChannelUrl: z.string().url().refine(isValidYouTubeChannelUrl, {
+    message: 'Must be a valid YouTube channel URL',
+  }),
 });
 
 export default function LoginPage() {

@@ -1,10 +1,23 @@
+import { isValidYouTubeChannelUrl } from '@/lib/youtube';
 import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { url: string } },
+  { params }: { params: { url: string[] } },
 ) {
-  const url = decodeURIComponent(params.url);
+  const { url: urlParam } = await params;
+  if (!urlParam) {
+    return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+  }
+  const url = decodeURIComponent(urlParam.join('/'));
+
+  if (!isValidYouTubeChannelUrl(url)) {
+    return NextResponse.json(
+      { error: 'Invalid YouTube channel URL' },
+      { status: 400 },
+    );
+  }
+
   try {
     const res = await fetch(url);
     const html = await res.text();
@@ -12,6 +25,13 @@ export async function GET(
       /<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(.*?)"/;
     const match = html.match(channelIdRegex);
     const channelId = match ? match[1] : null;
+
+    if (channelId === null) {
+      return NextResponse.json(
+        { error: 'The channel could not be found' },
+        { status: 400 },
+      );
+    }
 
     // Extract description
     const descriptionRegex = /<meta name="description" content="(.*?)"/;
@@ -33,6 +53,6 @@ export async function GET(
     });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
