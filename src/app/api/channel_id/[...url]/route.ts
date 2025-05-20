@@ -5,9 +5,8 @@ export async function GET(
   { params }: { params: { url: string } },
 ) {
   const url = decodeURIComponent(params.url);
-  const handlerID = url.split(',')[2];
   try {
-    const res = await fetch(`https://www.youtube.com/${handlerID}`);
+    const res = await fetch(url);
     const html = await res.text();
     const channelIdRegex =
       /<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(.*?)"/;
@@ -30,7 +29,7 @@ export async function GET(
       rss: `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
       description,
       title,
-      handle: handlerID,
+      // handle: handlerID,
     });
   } catch (error: any) {
     console.error(error);

@@ -6,11 +6,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { GalleryVerticalEnd } from 'lucide-react';
+import { TvMinimalPlayIcon, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -22,6 +22,7 @@ const formSchema = z.object({
     .refine(
       (url) =>
         url.startsWith('https://www.youtube.com/@') ||
+        url.startsWith('https:/www.youtube.com/@') ||
         url.startsWith('https://youtube.com/@'),
       {
         message: 'Must be a valid YouTube channel URL',
@@ -30,6 +31,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,8 +39,19 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/channel_id/${encodeURIComponent(values.youtubeChannelUrl)}`,
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Error fetching channel data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -56,7 +69,7 @@ export default function LoginPage() {
                   className="flex flex-col items-center gap-2 font-medium"
                 >
                   <div className="flex size-8 items-center justify-center rounded-md">
-                    <GalleryVerticalEnd className="size-6" />
+                    <TvMinimalPlayIcon className="size-10" />
                   </div>
                   <span className="sr-only">Logo</span>
                 </a>
@@ -81,8 +94,15 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Process
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Finding
+                  </>
+                ) : (
+                  'Find Channel ID'
+                )}
               </Button>
             </form>
           </Form>
