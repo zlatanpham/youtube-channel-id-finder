@@ -1,7 +1,7 @@
 {
-  "name": "youtube-channel-feed",
+  "name": "youtube-channel-id-finder",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
