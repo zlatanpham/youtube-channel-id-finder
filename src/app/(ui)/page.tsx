@@ -18,6 +18,14 @@ import * as z from 'zod';
 import { isValidYouTubeChannelUrl } from '@/lib/youtube';
 import CopyButton from '@/components/copy-button';
 
+interface ChannelData {
+  channelId: string;
+  url: string;
+  rss: string;
+  description: string;
+  title: string;
+}
+
 const formSchema = z.object({
   youtubeChannelUrl: z.string().url().refine(isValidYouTubeChannelUrl, {
     message: 'Must be a valid YouTube channel URL',
@@ -26,7 +34,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ChannelData | null>(null);
   const [open, setOpen] = useState(false);
   const host = window.location.host;
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
