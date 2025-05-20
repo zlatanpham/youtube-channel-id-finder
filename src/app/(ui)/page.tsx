@@ -36,7 +36,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<ChannelData | null>(null);
   const [open, setOpen] = useState(false);
-  const host = window.location.host;
+  const host = typeof window !== 'undefined' ? window.location.host : '';
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
   useEffect(() => {

@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { url: string[] } },
+  { params }: { params: Promise<{ url: string[] }> },
 ) {
-  const { url: urlParam } = await params;
-  if (!urlParam) {
+  const resolvedParams = await params;
+  if (!resolvedParams?.url) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
-  const url = decodeURIComponent(urlParam.join('/'));
+  const url = decodeURIComponent(resolvedParams.url.join('/'));
 
   if (!isValidYouTubeChannelUrl(url)) {
     return NextResponse.json(

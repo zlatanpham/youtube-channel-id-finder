@@ -20,14 +20,12 @@ async function getData(youtubeChannelUrl: string) {
 }
 
 type Props = {
-  params: {
-    url: string[];
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
+  params: Promise<{ url: string[] }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  let youtubeChannelUrl = params.url?.join('/') || '';
+  const resolvedParams = await params;
+  let youtubeChannelUrl = resolvedParams?.url.join('/') || '';
   youtubeChannelUrl = decodeURIComponent(youtubeChannelUrl);
   return {
     title: `RSS Feed URL for ${youtubeChannelUrl}`,
@@ -35,7 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function RssPage({ params }: Props) {
-  let youtubeChannelUrl = params.url?.join('/') || '';
+  const resolvedParams = await params;
+  let youtubeChannelUrl = resolvedParams?.url.join('/') || '';
   youtubeChannelUrl = decodeURIComponent(youtubeChannelUrl);
 
   if (!youtubeChannelUrl) {
